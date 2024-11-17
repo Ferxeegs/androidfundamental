@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/activeEventsFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.androidfundamental.fragment.HomeFragment"
+        android:label="Home" />
+
+    <fragment
+        android:id="@+id/activeEventsFragment"
+        android:name="com.example.androidfundamental.fragment.ActiveEventsFragment"
+        tools:layout="@layout/fragment_active_events" />
+
+    <fragment
+        android:id="@+id/finishedEventsFragment"
+        android:name="com.example.androidfundamental.fragment.PastEventsFragment"
+        tools:layout="@layout/fragment_past_events" />
+
+    <fragment
+        android:id="@+id/favoriteFragment"
+        android:name="com.example.androidfundamental.fragment.FavoriteFragment"
+        android:label="Favorites">
+        <action
+            android:id="@+id/action_homeFragment_to_favoriteFragment"
+            app:destination="@id/favoriteFragment" />
+    </fragment>
+</navigation>

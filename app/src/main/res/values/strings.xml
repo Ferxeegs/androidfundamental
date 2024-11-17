@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">androidfundamental</string>
+    <string name="event_image_desc">Gambar Acara</string>
+    <string name="search_events">Search events</string>
+    <string name="search">Search</string>
+    <string name="search_results">Search Results</string>
+    <string name="active_event">Active Event</string>
+    <string name="past_event">Past Event</string>
+</resources>
