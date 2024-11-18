@@ -37,6 +37,10 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(R.id.finishedEventsFragment)
                     true
                 }
+                R.id.nav_favorites -> { // Mengarahkan ke FavoriteFragment
+                    navController.navigate(R.id.favoriteFragment) // Pastikan fragment ini sudah ada di Navigation Graph
+                    true
+                }
                 else -> false
             }
         }

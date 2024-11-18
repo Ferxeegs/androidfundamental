@@ -1,24 +1,26 @@
 package com.example.androidfundamental.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.example.androidfundamental.dao.FavoriteEvent
 
 @Dao
 interface FavoriteEventDao {
+    @Query("SELECT * FROM favorite_events")
+    suspend fun getAllFavorites(): List<FavoriteEvent>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addFavorite(event: FavoriteEvent)
+    @Insert
+    suspend fun insertFavorite(favoriteEvent: FavoriteEvent)
 
     @Delete
-    suspend fun removeFavorite(event: FavoriteEvent): Int // Mengembalikan jumlah baris yang dihapus
+    suspend fun deleteFavorite(favoriteEvent: FavoriteEvent)
 
-    @Query("SELECT * FROM favorite_events")
-    fun getAllFavorites(): LiveData<List<FavoriteEvent>>
+    @Query("SELECT * FROM favorite_events WHERE eventId = :eventId LIMIT 1")
+    suspend fun getFavoriteById(eventId: String): FavoriteEvent?
 }
+
 
 
 

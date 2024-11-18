@@ -13,17 +13,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.androidfundamental.viewmodel.ActiveEventsViewModel
 import com.example.androidfundamental.adapter.EventAdapter
-import com.example.androidfundamental.viewmodel.FavoriteViewModel
 import com.example.androidfundamental.api.RetrofitClient
 import com.example.androidfundamental.databinding.FragmentActiveEventsBinding
-
 
 class ActiveEventsFragment : Fragment() {
 
     private var _binding: FragmentActiveEventsBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: ActiveEventsViewModel
-    private lateinit var favoriteViewModel: FavoriteViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,12 +35,9 @@ class ActiveEventsFragment : Fragment() {
 
         // Inisialisasi ViewModel
         viewModel = ViewModelProvider(this)[ActiveEventsViewModel::class.java]
-        favoriteViewModel = ViewModelProvider(this)[FavoriteViewModel::class.java]
 
-        val adapter = EventAdapter(mutableListOf()) { favoriteEvent ->
-            favoriteViewModel.addFavorite(favoriteEvent)
-            Toast.makeText(context, "${favoriteEvent.name} added to favorites", Toast.LENGTH_SHORT).show()
-        }
+        // Inisialisasi Adapter tanpa tombol Favorite
+        val adapter = EventAdapter(mutableListOf())
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = adapter
 
@@ -52,18 +46,10 @@ class ActiveEventsFragment : Fragment() {
             binding.progressBar.visibility = View.GONE
             if (events.isEmpty()) {
                 binding.recyclerView.visibility = View.GONE
-                binding.emptyView.visibility = View.VISIBLE
             } else {
                 binding.recyclerView.visibility = View.VISIBLE
-                binding.emptyView.visibility = View.GONE
                 adapter.updateData(events)
             }
-        }
-
-        // Observe daftar favorit
-        favoriteViewModel.allFavorites.observe(viewLifecycleOwner) { favoriteEvents ->
-            val favoriteIds = favoriteEvents.map { it.eventId }.toSet()
-            adapter.updateFavorites(favoriteIds)
         }
 
         // Observe error messages
@@ -71,8 +57,6 @@ class ActiveEventsFragment : Fragment() {
             message?.let {
                 binding.progressBar.visibility = View.GONE
                 binding.recyclerView.visibility = View.GONE
-                binding.emptyView.visibility = View.VISIBLE
-                binding.emptyView.text = it
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             }
         }
@@ -96,5 +80,3 @@ class ActiveEventsFragment : Fragment() {
         _binding = null // Menghindari kebocoran memori
     }
 }
-
-

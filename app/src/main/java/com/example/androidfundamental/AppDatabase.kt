@@ -9,18 +9,19 @@ import com.example.androidfundamental.dao.FavoriteEventDao
 
 @Database(entities = [FavoriteEvent::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
+
     abstract fun favoriteEventDao(): FavoriteEventDao
 
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
-        fun getInstance(context: Context): AppDatabase {
+        fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "app_database"
+                    "favorite_database"
                 ).build()
                 INSTANCE = instance
                 instance
@@ -28,4 +29,5 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 }
+
 

@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.androidfundamental.adapter.EventAdapter
-import com.example.androidfundamental.viewmodel.FavoriteViewModel
 import com.example.androidfundamental.viewmodel.PastEventsViewModel
 import com.example.androidfundamental.api.RetrofitClient
 import com.example.androidfundamental.databinding.FragmentPastEventsBinding
@@ -22,7 +21,6 @@ class PastEventsFragment : Fragment() {
     private var _binding: FragmentPastEventsBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: PastEventsViewModel
-    private lateinit var favoriteViewModel: FavoriteViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,25 +35,21 @@ class PastEventsFragment : Fragment() {
 
         // Inisialisasi ViewModel
         viewModel = ViewModelProvider(this)[PastEventsViewModel::class.java]
-        favoriteViewModel = ViewModelProvider(requireActivity())[FavoriteViewModel::class.java]
 
-        val adapter = EventAdapter(mutableListOf()) { favoriteEvent ->
-            // Menambahkan atau menghapus event dari favorit
-            favoriteViewModel.addFavorite(favoriteEvent)
-        }
-
+        // Inisialisasi Adapter tanpa tombol Favorite
+        val adapter = EventAdapter(mutableListOf())
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = adapter
 
-        // Observe loading status
-        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-        }
-
-        // Observe LiveData dari ViewModel
+        // Observe daftar event aktif
         viewModel.pastEvents.observe(viewLifecycleOwner) { events ->
-            binding.progressBar.visibility = View.GONE // Menyembunyikan progress bar
-            adapter.updateData(events)
+            binding.progressBar.visibility = View.GONE
+            if (events.isEmpty()) {
+                binding.recyclerView.visibility = View.GONE
+            } else {
+                binding.recyclerView.visibility = View.VISIBLE
+                adapter.updateData(events)
+            }
         }
 
         // Observe error messages

@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.androidfundamental.model.Event
 import com.example.androidfundamental.adapter.EventAdapter
 import com.example.androidfundamental.model.EventResponse
-import com.example.androidfundamental.dao.FavoriteEvent
 import com.example.androidfundamental.api.RetrofitClient
 import com.example.androidfundamental.databinding.FragmentHomeBinding
 import retrofit2.Call
@@ -62,26 +61,21 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupRecyclerViews() {
-        // Define the onFavoriteClicked lambda function to handle favorites
-        val onFavoriteClicked: (FavoriteEvent) -> Unit = { favoriteEvent ->
-            // Handle the event of adding or removing a favorite here
-            // You can save the favorite event in your local database or shared preferences
-            Log.d("HomeFragment", "Favorite clicked: ${favoriteEvent.name}")
-        }
-
         // RecyclerView untuk acara aktif
-        activeEventsAdapter = EventAdapter(activeEvents, onFavoriteClicked)
-        binding.recyclerViewActiveEvents.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        activeEventsAdapter = EventAdapter(activeEvents)
+        binding.recyclerViewActiveEvents.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerViewActiveEvents.adapter = activeEventsAdapter
 
         // RecyclerView untuk acara yang telah berlalu (ditampilkan secara horizontal)
-        pastEventsAdapter = EventAdapter(pastEvents, onFavoriteClicked)
-        binding.recyclerViewPastEvents.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        pastEventsAdapter = EventAdapter(pastEvents)
+        binding.recyclerViewPastEvents.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerViewPastEvents.adapter = pastEventsAdapter
 
         // RecyclerView untuk hasil pencarian
-        searchResultsAdapter = EventAdapter(searchResults, onFavoriteClicked)
-        binding.recyclerViewSearchResults.layoutManager = LinearLayoutManager(context) // Menggunakan layout manager yang sesuai
+        searchResultsAdapter = EventAdapter(searchResults)
+        binding.recyclerViewSearchResults.layoutManager = LinearLayoutManager(context)
         binding.recyclerViewSearchResults.adapter = searchResultsAdapter
     }
 
@@ -92,8 +86,10 @@ class HomeFragment : Fragment() {
     }
 
     private fun isNetworkAvailable(): Boolean {
-        val connectivityManager = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+        val connectivityManager =
+            context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkCapabilities =
+            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
 
         return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
@@ -106,7 +102,11 @@ class HomeFragment : Fragment() {
 
     private fun fetchActiveEvents() {
         if (!isNetworkAvailable()) {
-            Toast.makeText(context, "No internet connection. Please check your connection.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                "No internet connection. Please check your connection.",
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
 
@@ -121,10 +121,12 @@ class HomeFragment : Fragment() {
                         activeEvents.addAll(limitedActiveEvents)
                         activeEventsAdapter.notifyDataSetChanged()
                     } else {
-                        Toast.makeText(context, "No active events available", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "No active events available", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 } else {
-                    Toast.makeText(context, "Error: ${response.message()}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Error: ${response.message()}", Toast.LENGTH_SHORT)
+                        .show()
                 }
                 checkIfDataLoaded()
             }
@@ -140,7 +142,11 @@ class HomeFragment : Fragment() {
 
     private fun fetchPastEvents() {
         if (!isNetworkAvailable()) {
-            Toast.makeText(context, "No internet connection. Please check your connection.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                "No internet connection. Please check your connection.",
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
 
@@ -155,10 +161,12 @@ class HomeFragment : Fragment() {
                         pastEvents.addAll(limitedPastEvents)
                         pastEventsAdapter.notifyDataSetChanged()
                     } else {
-                        Toast.makeText(context, "No past events available", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "No past events available", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 } else {
-                    Toast.makeText(context, "Error: ${response.message()}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Error: ${response.message()}", Toast.LENGTH_SHORT)
+                        .show()
                 }
                 checkIfDataLoaded()
             }

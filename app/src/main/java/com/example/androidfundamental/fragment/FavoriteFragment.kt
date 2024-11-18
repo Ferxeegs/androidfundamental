@@ -1,18 +1,23 @@
 package com.example.androidfundamental.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.androidfundamental.model.Event
 import com.example.androidfundamental.adapter.EventAdapter
+import com.example.androidfundamental.viewmodel.FavoriteViewModel
 import com.example.androidfundamental.databinding.FragmentFavoriteBinding
 
 class FavoriteFragment : Fragment() {
+
     private lateinit var recyclerView: RecyclerView
-    private lateinit var favoriteAdapter: EventAdapter
+    private lateinit var eventAdapter: EventAdapter
+    private lateinit var favoriteViewModel: FavoriteViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -21,28 +26,24 @@ class FavoriteFragment : Fragment() {
         val binding = FragmentFavoriteBinding.inflate(inflater, container, false)
 
         recyclerView = binding.recyclerViewFavorites
+        favoriteViewModel = ViewModelProvider(this).get(FavoriteViewModel::class.java)
 
-        // Set up RecyclerView adapter
-        favoriteAdapter = EventAdapter(mutableListOf()) { favoriteEvent ->
-            // Handle favorite button click
+        // Setup RecyclerView dengan EventAdapter dan LayoutManager
+        eventAdapter = EventAdapter(mutableListOf())
+        recyclerView.adapter = eventAdapter
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        // Observe perubahan data event favorit
+        favoriteViewModel.favoriteEvents.observe(viewLifecycleOwner) { events ->
+            Log.d("FavoriteFragment", "Received events: $events")
+            // Pastikan data event favorit tidak duplikat
+            val distinctEvents = events.distinctBy { it.id }
+            eventAdapter.updateData(distinctEvents)  // Update dengan data yang unik
         }
-        recyclerView.adapter = favoriteAdapter
 
-        // Load data into the RecyclerView
-        loadFavoriteEvents()
+        // Load event favorit
+        favoriteViewModel.loadFavoriteEvents()
 
         return binding.root
     }
-
-    private fun loadFavoriteEvents() {
-        // Fetch data from the database or API and update the RecyclerView adapter
-        val favoriteEvents = getFavoriteEventsFromDatabase() // Gantikan dengan metode untuk mengambil data
-        favoriteAdapter.updateData(favoriteEvents)
-    }
-
-    private fun getFavoriteEventsFromDatabase(): List<Event> {
-        // Implementasikan logika untuk mengambil event favorit dari database
-        return listOf() // Return data favorite sebagai contoh
-    }
 }
-

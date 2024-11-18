@@ -9,46 +9,49 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.androidfundamental.model.Event
 import com.example.androidfundamental.R
 import com.example.androidfundamental.activity.EventDetailActivity
 import com.example.androidfundamental.dao.FavoriteEvent
+import com.example.androidfundamental.model.Event
 
 class EventAdapter(
-    private val eventList: MutableList<Event>,
-    private val onFavoriteClicked: (FavoriteEvent) -> Unit // Callback untuk tombol favorit
+    private val eventList: MutableList<Event> // Daftar event untuk ditampilkan
 ) : RecyclerView.Adapter<EventAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val eventImage: ImageView = itemView.findViewById(R.id.event_image)
-        val eventName: TextView = itemView.findViewById(R.id.event_name)
-        val progressBar: ProgressBar = itemView.findViewById(R.id.itemProgressBar)
-        val favoriteButton: ImageView = itemView.findViewById(R.id.btn_favorite) // Tambahkan ID untuk tombol favorit
+        private val eventImage: ImageView = itemView.findViewById(R.id.event_image)
+        private val eventName: TextView = itemView.findViewById(R.id.event_name)
+        private val progressBar: ProgressBar = itemView.findViewById(R.id.itemProgressBar)
 
-        init {
-            // Klik item untuk membuka detail event
+        fun bind(event: Event) {
+            // Set nama event
+            eventName.text = event.name
+
+            // Load gambar event menggunakan Glide
+            Glide.with(itemView.context)
+                .load(event.imageLogo)
+                .into(eventImage)
+
+            // ProgressBar sembunyi setelah data berhasil di-load
+            progressBar.visibility = View.GONE
+            eventImage.visibility = View.VISIBLE
+            eventName.visibility = View.VISIBLE
+
+            // Listener untuk membuka detail event
             itemView.setOnClickListener {
-                val event = eventList[adapterPosition]
                 val context = itemView.context
                 val intent = Intent(context, EventDetailActivity::class.java).apply {
                     putExtra("event", event)
                 }
                 context.startActivity(intent)
             }
+        }
 
-            // Klik tombol favorit untuk menambah/hapus dari daftar favorit
-            favoriteButton.setOnClickListener {
-                val event = eventList[adapterPosition]
-                val favoriteEvent = FavoriteEvent(
-                    eventId = event.id,
-                    name = event.name,
-                    summary = event.summary,
-                    imageLogo = event.imageLogo,
-                    beginTime = event.beginTime,
-                    endTime = event.endTime
-                )
-                onFavoriteClicked(favoriteEvent) // Callback dipanggil
-            }
+        fun showLoading() {
+            // Tampilkan ProgressBar jika data sedang dimuat
+            progressBar.visibility = View.VISIBLE
+            eventImage.visibility = View.GONE
+            eventName.visibility = View.GONE
         }
     }
 
@@ -59,49 +62,22 @@ class EventAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // Tampilkan ProgressBar saat memuat data
-        holder.progressBar.visibility = View.VISIBLE
-
         if (position < eventList.size) {
             val event = eventList[position]
-
-            // Sembunyikan ProgressBar dan tampilkan data saat loading selesai
-            holder.progressBar.visibility = View.GONE
-            holder.eventImage.visibility = View.VISIBLE
-            holder.eventName.visibility = View.VISIBLE
-
-            // Load event data ke dalam item
-            holder.eventName.text = event.name
-            Glide.with(holder.itemView.context)
-                .load(event.imageLogo)
-                .into(holder.eventImage)
-
-            // Ubah ikon favorit jika event sudah difavoritkan (opsional, jika ada logika favorit di luar adapter)
-            // Misalnya, cek apakah event ini sudah dalam daftar favorit
-            holder.favoriteButton.setImageResource(R.drawable.fav) // Default
+            holder.bind(event) // Bind data event ke ViewHolder
         } else {
-            // Jika tidak ada event, tampilkan ProgressBar
-            holder.progressBar.visibility = View.VISIBLE
-            holder.eventImage.visibility = View.GONE
-            holder.eventName.visibility = View.GONE
+            holder.showLoading() // Tampilkan loading jika data belum lengkap
         }
     }
 
     override fun getItemCount(): Int = eventList.size
 
-    fun updateData(newEvents: List<Event>?) {
+    fun updateData(newEvents: List<Event>) {
         newEvents?.let {
             this.eventList.clear()
             this.eventList.addAll(it)
-            notifyDataSetChanged()
+            notifyDataSetChanged() // Pastikan adapter diberi tahu tentang data yang diperbarui
         }
     }
-    fun updateFavorites(favoriteIds: Set<Int>) {
-        eventList.forEach { event ->
-            // Menandai event apakah termasuk dalam daftar favorit
-            event.isFavorite = favoriteIds.contains(event.id)
-        }
-        notifyDataSetChanged()
-    }
-}
 
+}
