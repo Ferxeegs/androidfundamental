@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.androidfundamental.R
 import com.example.androidfundamental.activity.EventDetailActivity
-import com.example.androidfundamental.dao.FavoriteEvent
 import com.example.androidfundamental.model.Event
 
 class EventAdapter(

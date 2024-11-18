@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.Html
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
@@ -14,7 +13,6 @@ import com.example.androidfundamental.dao.FavoriteEvent
 import com.example.androidfundamental.viewmodel.FavoriteViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.androidfundamental.databinding.ActivityEventDetailBinding
-import android.widget.ImageView
 import android.widget.Toast
 import com.example.androidfundamental.R
 
@@ -22,7 +20,6 @@ import com.example.androidfundamental.R
 class EventDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEventDetailBinding
-    private lateinit var favoriteButton: ImageView
     private var isFavorite: Boolean = false
     private lateinit var favoriteViewModel: FavoriteViewModel
 
